@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head><title>My Collection</title></head>
+<body>
+    <h1>My Fragrance Collection</h1>
+    <a href="/add">+ Add a Fragrance</a>
+    <ul>
+        {% for f in fragrances %}
+            <li><strong>{{ f.name }}</strong> ({{ f.brand }}) — {{ f.notes }} | {{ f.family }} | {{ f.season }} | {{ f.occasion }} | ${{ f.price }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

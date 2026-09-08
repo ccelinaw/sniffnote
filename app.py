@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask
+from flask import render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 load_dotenv()
@@ -25,6 +26,28 @@ class Fragrance(db.Model):
 @app.route('/')
 def home():
     return 'Sniffnote activated!'
+
+@app.route('/add', methods=['GET', 'POST'])
+def add_fragrance():
+    if request.method == 'POST':
+        new_fragrance = Fragrance(
+            name=request.form['name'],
+            brand=request.form['brand'],
+            notes=request.form['notes'],
+            family=request.form['family'],
+            season=request.form['season'],
+            occasion=request.form['occasion'],
+            price=request.form['price'] or None
+        )
+        db.session.add(new_fragrance)
+        db.session.commit()
+        return redirect('/collection')
+    return render_template('add.html')
+
+@app.route('/collection')
+def collection():
+    fragrances = Fragrance.query.all()
+    return render_template('collection.html', fragrances=fragrances)
 
 if __name__ == '__main__':
     app.run(debug=True)
