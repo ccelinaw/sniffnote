@@ -3,10 +3,14 @@
 <head><title>My Collection</title></head>
 <body>
     <h1>My Fragrance Collection</h1>
-    <a href="/add">+ Add a Fragrance</a>
+    <a href="/search">+ Search & Add a Fragrance</a>
     <ul>
-        {% for f in fragrances %}
-            <li><strong>{{ f.name }}</strong> ({{ f.brand }}) — {{ f.notes }} | {{ f.family }} | {{ f.season }} | {{ f.occasion }} | ${{ f.price }}</li>
+        {% for item in items %}
+            <li>
+                <strong>{{ item.fragrance.name }}</strong> ({{ item.fragrance.brand }})
+                — {{ item.fragrance.main_accord1 }}, {{ item.fragrance.main_accord2 }}
+                | Rating: {{ item.fragrance.rating_value }}
+            </li>
         {% endfor %}
     </ul>
 </body>

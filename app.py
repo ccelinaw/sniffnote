@@ -33,31 +33,57 @@ class Fragrance(db.Model):
     def __repr__(self):
         return f'<Fragrance {self.name}>'
 
+class CollectionItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    fragrance_id = db.Column(db.Integer, db.ForeignKey('fragrance.id'), nullable=False)
+    date_added = db.Column(db.DateTime, server_default=db.func.now())
+
+    fragrance = db.relationship('Fragrance', backref='collection_entries')
+
+    def __repr__(self):
+        return f'<CollectionItem {self.fragrance_id}>'
+
 @app.route('/')
 def home():
     return 'Sniffnote activated!'
 
-@app.route('/add', methods=['GET', 'POST'])
-def add_fragrance():
-    if request.method == 'POST':
-        new_fragrance = Fragrance(
-            name=request.form['name'],
-            brand=request.form['brand'],
-            notes=request.form['notes'],
-            family=request.form['family'],
-            season=request.form['season'],
-            occasion=request.form['occasion'],
-            price=request.form['price'] or None
-        )
-        db.session.add(new_fragrance)
+@app.route('/search')
+def search():
+    query = request.args.get('q', '').strip()
+    results = []
+    if query:
+        words = query.split()
+        filters = []
+        for word in words:
+            filters.append(
+                (Fragrance.name.ilike(f'%{word}%')) | (Fragrance.brand.ilike(f'%{word}%'))
+            )
+        # Require ALL words to match somewhere (name or brand)
+        combined_filter = filters[0]
+        for f in filters[1:]:
+            combined_filter = combined_filter & f
+
+        results = Fragrance.query.filter(combined_filter).order_by(
+            # Exact/closer name matches first
+            Fragrance.name.ilike(f'{query}%').desc(),
+            Fragrance.rating_count.desc()
+        ).limit(50).all()
+
+    return render_template('search.html', results=results, query=query)
+
+@app.route('/collection/add/<int:fragrance_id>', methods=['POST'])
+def add_to_collection(fragrance_id):
+    existing = CollectionItem.query.filter_by(fragrance_id=fragrance_id).first()
+    if not existing:
+        item = CollectionItem(fragrance_id=fragrance_id)
+        db.session.add(item)
         db.session.commit()
-        return redirect('/collection')
-    return render_template('add.html')
+    return redirect('/collection')
 
 @app.route('/collection')
 def collection():
-    fragrances = Fragrance.query.all()
-    return render_template('collection.html', fragrances=fragrances)
+    items = CollectionItem.query.all()
+    return render_template('collection.html', items=items)
 
 if __name__ == '__main__':
     app.run(debug=True)

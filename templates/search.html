@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Search Fragrances</title></head>
+<body>
+    <h1>Search the Catalog</h1>
+    <a href="/collection">View My Collection</a>
+    <form method="GET" action="/search">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name or brand">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+        <ul>
+        {% for f in results %}
+            <li>
+                <strong>{{ f.name }}</strong> ({{ f.brand }}) — {{ f.main_accord1 }}, {{ f.main_accord2 }}
+                <form method="POST" action="/collection/add/{{ f.id }}" style="display:inline;">
+                    <button type="submit">+ Add to Collection</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% elif query %}
+        <p>No results found.</p>
+    {% endif %}
+</body>
+</html>
