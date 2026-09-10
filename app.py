@@ -12,14 +12,24 @@ db = SQLAlchemy(app)
 
 class Fragrance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
     brand = db.Column(db.String(100))
-    notes = db.Column(db.String(500))
-    family = db.Column(db.String(50))
-    season = db.Column(db.String(50))
-    occasion = db.Column(db.String(50))
-    price = db.Column(db.Float)
-
+    country = db.Column(db.String(100))
+    gender = db.Column(db.String(20))
+    rating_value = db.Column(db.Float)
+    rating_count = db.Column(db.Integer)
+    year = db.Column(db.Integer)
+    top_notes = db.Column(db.String(500))
+    middle_notes = db.Column(db.String(500))
+    base_notes = db.Column(db.String(500))
+    perfumer1 = db.Column(db.String(100))
+    perfumer2 = db.Column(db.String(100))
+    main_accord1 = db.Column(db.String(50))
+    main_accord2 = db.Column(db.String(50))
+    main_accord3 = db.Column(db.String(50))
+    main_accord4 = db.Column(db.String(50))
+    main_accord5 = db.Column(db.String(50))
+    url = db.Column(db.String(500))
     def __repr__(self):
         return f'<Fragrance {self.name}>'
 
